@@ -11,6 +11,7 @@ class SabiaApp {
         this.setupResponsive();
         this.setupConfigurationsSection();
         this.setupCalendar();
+        this.setupObservations();
         this.loadInitialData();
     }
 
@@ -26,6 +27,211 @@ class SabiaApp {
                 this.setActiveNav(item.parentElement);
             });
         });
+    }
+
+    setupObservations() {
+        const addBtn = document.querySelector('.btn-add-observation');
+        const form = document.getElementById('newObservationForm');
+        const textarea = document.querySelector('.observation-textarea');
+        const saveBtn = document.querySelector('.btn-save-observation');
+        const cancelBtn = document.querySelector('.btn-cancel-observation');
+        const observationsList = document.querySelector('.observations-list');
+
+        // Mostrar formulário para nova observação
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                if (form.style.display === 'block') {
+                    textarea.focus();
+                }
+            });
+        }
+
+        // Cancelar nova observação
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                form.style.display = 'none';
+                textarea.value = '';
+            });
+        }
+
+        // Salvar nova observação
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const text = textarea.value.trim();
+                if (text) {
+                    this.addObservation(text);
+                    textarea.value = '';
+                    form.style.display = 'none';
+                }
+            });
+        }
+
+        // Tecla Enter para salvar (Ctrl+Enter)
+        if (textarea) {
+            textarea.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    const text = textarea.value.trim();
+                    if (text) {
+                        this.addObservation(text);
+                        textarea.value = '';
+                        form.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Event delegation para botões de editar e excluir
+        if (observationsList) {
+            observationsList.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-edit-observation')) {
+                    const item = e.target.closest('.observation-item');
+                    this.editObservation(item);
+                } else if (e.target.closest('.btn-delete-observation')) {
+                    const item = e.target.closest('.observation-item');
+                    this.deleteObservation(item);
+                }
+            });
+        }
+    }
+
+    addObservation(text) {
+        const observationsList = document.querySelector('.observations-list');
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('pt-BR');
+        const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        
+        const observationHTML = `
+            <div class="observation-item">
+                <div class="observation-content">
+                    <div class="observation-text">${text}</div>
+                    <div class="observation-meta">
+                        <span class="observation-date">${dateStr}</span>
+                        <span class="observation-time">${timeStr}</span>
+                    </div>
+                </div>
+                <div class="observation-actions">
+                    <button class="btn-edit-observation"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete-observation"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `;
+        
+        observationsList.insertAdjacentHTML('afterbegin', observationHTML);
+        
+        // Salvar no localStorage
+        this.saveObservationsToStorage();
+    }
+
+    editObservation(item) {
+        const textElement = item.querySelector('.observation-text');
+        const currentText = textElement.textContent;
+        
+        // Criar input de edição
+        const editInput = document.createElement('textarea');
+        editInput.value = currentText;
+        editInput.className = 'observation-textarea';
+        editInput.style.minHeight = '60px';
+        
+        // Substituir texto por input
+        textElement.style.display = 'none';
+        textElement.parentNode.insertBefore(editInput, textElement.nextSibling);
+        editInput.focus();
+        
+        // Criar botões de ação
+        const actions = item.querySelector('.observation-actions');
+        const originalActions = actions.innerHTML;
+        actions.innerHTML = `
+            <button class="btn-save-edit"><i class="fas fa-check"></i></button>
+            <button class="btn-cancel-edit"><i class="fas fa-times"></i></button>
+        `;
+        
+        // Salvar edição
+        const saveBtn = actions.querySelector('.btn-save-edit');
+        const cancelBtn = actions.querySelector('.btn-cancel-edit');
+        
+        const saveEdit = () => {
+            const newText = editInput.value.trim();
+            if (newText) {
+                textElement.textContent = newText;
+                textElement.style.display = 'block';
+                editInput.remove();
+                actions.innerHTML = originalActions;
+                this.saveObservationsToStorage();
+            }
+        };
+        
+        const cancelEdit = () => {
+            textElement.style.display = 'block';
+            editInput.remove();
+            actions.innerHTML = originalActions;
+        };
+        
+        saveBtn.addEventListener('click', saveEdit);
+        cancelBtn.addEventListener('click', cancelEdit);
+        
+        // Enter para salvar, Escape para cancelar
+        editInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                saveEdit();
+            } else if (e.key === 'Escape') {
+                cancelEdit();
+            }
+        });
+    }
+
+    deleteObservation(item) {
+        if (confirm('Tem certeza que deseja excluir esta observação?')) {
+            item.remove();
+            this.saveObservationsToStorage();
+        }
+    }
+
+    saveObservationsToStorage() {
+        const observations = [];
+        const items = document.querySelectorAll('.observation-item');
+        
+        items.forEach(item => {
+            const text = item.querySelector('.observation-text').textContent;
+            const date = item.querySelector('.observation-date').textContent;
+            const time = item.querySelector('.observation-time').textContent;
+            
+            observations.push({ text, date, time });
+        });
+        
+        localStorage.setItem('sabia_observations', JSON.stringify(observations));
+    }
+
+    loadObservationsFromStorage() {
+        const stored = localStorage.getItem('sabia_observations');
+        if (stored) {
+            const observations = JSON.parse(stored);
+            const observationsList = document.querySelector('.observations-list');
+            
+            // Limpar observações existentes (exceto as de exemplo)
+            observationsList.innerHTML = '';
+            
+            // Adicionar observações salvas
+            observations.forEach(obs => {
+                const observationHTML = `
+                    <div class="observation-item">
+                        <div class="observation-content">
+                            <div class="observation-text">${obs.text}</div>
+                            <div class="observation-meta">
+                                <span class="observation-date">${obs.date}</span>
+                                <span class="observation-time">${obs.time}</span>
+                            </div>
+                        </div>
+                        <div class="observation-actions">
+                            <button class="btn-edit-observation"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete-observation"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+                observationsList.insertAdjacentHTML('beforeend', observationHTML);
+            });
+        }
     }
 
     // Trocar visualização
@@ -345,6 +551,7 @@ class SabiaApp {
     loadInitialData() {
         this.updateDashboardData();
         this.loadRecentActivity();
+        this.loadObservationsFromStorage();
     }
 
     // Atualizar dados do dashboard
@@ -882,6 +1089,95 @@ function hideTooltip(e) {
         delete e.target.tooltipElement;
     }
 }
+
+// Funcionalidade do botão de salvar configurações
+function setupSaveConfigButton() {
+    const saveBtn = document.getElementById('saveConfigBtn');
+    
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Simular salvamento (aqui você pode adicionar a lógica real de salvamento)
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            
+            setTimeout(() => {
+                // Restaurar botão
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+                
+                // Mostrar mensagem de sucesso
+                showSuccessMessage('Configurações salvas com sucesso!');
+            }, 1500);
+        });
+    }
+}
+
+// Função para mostrar mensagem de sucesso
+function showSuccessMessage(message) {
+    // Remover mensagem anterior se existir
+    const existingMessage = document.querySelector('.success-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Criar nova mensagem
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+    `;
+    
+    // Adicionar ao body
+    document.body.appendChild(successDiv);
+    
+    // Mostrar com animação
+    setTimeout(() => {
+        successDiv.classList.add('show');
+    }, 100);
+    
+    // Remover após 3 segundos
+    setTimeout(() => {
+        successDiv.classList.remove('show');
+        setTimeout(() => {
+            if (successDiv.parentNode) {
+                successDiv.remove();
+            }
+        }, 400);
+    }, 3000);
+}
+
+// Funcionalidade do botão de salvar no header de configurações
+function setupConfigHeaderSaveButton() {
+    const saveBtn = document.getElementById('configHeaderSaveBtn');
+    
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Simular salvamento
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            
+            setTimeout(() => {
+                // Restaurar botão
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-save"></i> Salvar';
+                
+                // Mostrar mensagem de sucesso
+                showSuccessMessage('Configurações salvas com sucesso!');
+            }, 1200);
+        });
+    }
+}
+
+// Inicializar quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    setupSaveConfigButton();
+    setupConfigHeaderSaveButton();
+});
 
 // Exportar para uso global se necessário
 window.SabiaApp = SabiaApp;

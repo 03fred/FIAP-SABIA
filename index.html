@@ -74,7 +74,10 @@
         <main class="main-content">
             <header class="top-header">
                 <div class="header-actions">
-                    <button class="btn-save">Salvar Alterações</button>
+                    <button class="btn-save btn-notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">1</span>
+                    </button>
                 </div>
             </header>
 
@@ -212,6 +215,14 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Botão de Salvar Alterações -->
+                        <div class="config-save-section">
+                            <button id="saveConfigBtn" class="btn-save btn-primary">
+                                <i class="fas fa-save"></i>
+                                Salvar Alterações
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -329,52 +340,56 @@
                     </div>
                     
                     <div class="calendar-container">
-                        <div class="time-column">
-                            <div class="time-slot-header"></div>
-                            <div class="time-slot">8:00</div>
-                            <div class="time-slot">9:00</div>
-                            <div class="time-slot">10:00</div>
-                            <div class="time-slot">11:00</div>
-                            <div class="time-slot">12:00</div>
-                            <div class="time-slot">13:00</div>
-                            <div class="time-slot">14:00</div>
-                            <div class="time-slot">15:00</div>
-                            <div class="time-slot">16:00</div>
-                            <div class="time-slot">17:00</div>
-                        </div>
-                        
-                        <div class="calendar-grid">
-                            <div class="calendar-header">
-                                <div class="day-header">Seg<br><span class="day-number">22</span></div>
-                                <div class="day-header">Ter<br><span class="day-number">23</span></div>
-                                <div class="day-header">Qua<br><span class="day-number">24</span></div>
-                                <div class="day-header">Qui<br><span class="day-number">25</span></div>
-                                <div class="day-header">Sex<br><span class="day-number">26</span></div>
-                                <div class="day-header">Sáb<br><span class="day-number">27</span></div>
-                                <div class="day-header">Dom<br><span class="day-number">28</span></div>
+                        <div class="calendar-main">
+                            <div class="time-column">
+                                <div class="time-slot-header"></div>
+                                <div class="time-slot">8:00</div>
+                                <div class="time-slot">9:00</div>
+                                <div class="time-slot">10:00</div>
+                                <div class="time-slot">11:00</div>
+                                <div class="time-slot">12:00</div>
+                                <div class="time-slot">13:00</div>
+                                <div class="time-slot">14:00</div>
+                                <div class="time-slot">15:00</div>
+                                <div class="time-slot">16:00</div>
+                                <div class="time-slot">17:00</div>
                             </div>
                             
-                            <div class="calendar-body" id="calendarBody">
-                                <!-- Horários serão gerados dinamicamente -->
-                            </div>
-                            
-                            <!-- Evento de exemplo -->
-                            <div class="calendar-event" style="grid-column: 4; grid-row: 9; background: #fbbf24;">
-                                <div class="event-content">
-                                    <div class="event-title">Sessão Agendada</div>
-                                    <div class="event-time">16:00 - 17:00</div>
+                            <div class="calendar-content">
+                                <div class="calendar-grid">
+                                    <div class="calendar-header">
+                                        <div class="day-header">Seg<br><span class="day-number">22</span></div>
+                                        <div class="day-header">Ter<br><span class="day-number">23</span></div>
+                                        <div class="day-header">Qua<br><span class="day-number">24</span></div>
+                                        <div class="day-header">Qui<br><span class="day-number">25</span></div>
+                                        <div class="day-header">Sex<br><span class="day-number">26</span></div>
+                                        <div class="day-header">Sáb<br><span class="day-number">27</span></div>
+                                        <div class="day-header">Dom<br><span class="day-number">28</span></div>
+                                    </div>
+                                    
+                                    <div class="calendar-body" id="calendarBody">
+                                        <!-- Horários serão gerados dinamicamente -->
+                                    </div>
+                                    
+                                    <!-- Evento de exemplo -->
+                                    <div class="calendar-event" style="grid-column: 4; grid-row: 9; background: #fbbf24;">
+                                        <div class="event-content">
+                                            <div class="event-title">Sessão Agendada</div>
+                                            <div class="event-time">16:00 - 17:00</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="agenda-sidebar">
-                        <div class="sidebar-info">
-                            <h3>Ana Silva</h3>
-                            <p>Automatização com ChatGPT</p>
-                            <div class="session-details">
-                                <i class="fas fa-video"></i>
-                                <span>Online</span>
+                        
+                        <div class="agenda-sidebar">
+                            <div class="sidebar-info">
+                                <h3>Ana Silva</h3>
+                                <p>Automatização com ChatGPT</p>
+                                <div class="session-details">
+                                    <i class="fas fa-video"></i>
+                                    <span>Online</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -641,11 +656,139 @@
                 </div>
             </div>
 
+            <!-- Solicitações View -->
+            <div id="solicitacoes" class="content-view">
+                <div class="solicitacoes-header">
+                    <h1>Solicitações de Mentoria</h1>
+                    <div class="solicitacoes-stats">
+                        <span class="stat-item">2 Pendentes</span>
+                        <span class="stat-item">5 Aprovadas</span>
+                    </div>
+                </div>
+
+                <div class="solicitacoes-container">
+                    <!-- Solicitação 1 - Carlos Santos -->
+                    <div class="solicitacao-card">
+                        <div class="solicitacao-header">
+                            <div class="user-info">
+                                <div class="user-avatar">CS</div>
+                                <div class="user-details">
+                                    <h3>Carlos Santos</h3>
+                                    <p>carlos@email.com</p>
+                                    <span class="user-status intermediario">Intermediário</span>
+                                </div>
+                            </div>
+                            <div class="solicitacao-meta">
+                                <span class="time-ago">5 horas atrás</span>
+                            </div>
+                        </div>
+
+                        <div class="solicitacao-content">
+                            <div class="topic-section">
+                                <h4>Tópico da Sessão</h4>
+                                <p>Machine Learning para Negócios</p>
+                            </div>
+
+                            <div class="challenge-section">
+                                <h4>Desafio do Usuário</h4>
+                                <p>Implementar ML em processos de vendas</p>
+                            </div>
+
+                            <div class="progress-section">
+                                <h4>Progresso no Cronograma</h4>
+                                <div class="progress-steps">
+                                    <div class="progress-step completed">Fundamentos de ML</div>
+                                    <div class="progress-step current">Análise de Dados de Vendas</div>
+                                    <div class="progress-step">Modelos Preditivos</div>
+                                    <div class="progress-step">Implementação Prática</div>
+                                </div>
+                            </div>
+
+                            <div class="session-info">
+                                <div class="session-date">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>2024-01-24</span>
+                                </div>
+                                <div class="session-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>10:30 • 45 min</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="solicitacao-actions">
+                            <button class="btn-action btn-reject">Recusar</button>
+                            <button class="btn-action btn-reschedule">Reagendar</button>
+                            <button class="btn-action btn-accept">Aceitar Sessão</button>
+                        </div>
+                    </div>
+
+                    <!-- Solicitação 2 - Maria Oliveira -->
+                    <div class="solicitacao-card">
+                        <div class="solicitacao-header">
+                            <div class="user-info">
+                                <div class="user-avatar">MO</div>
+                                <div class="user-details">
+                                    <h3>Maria Oliveira</h3>
+                                    <p>maria@email.com</p>
+                                    <span class="user-status avancado">Avançado</span>
+                                </div>
+                            </div>
+                            <div class="solicitacao-meta">
+                                <span class="time-ago">1 dia atrás</span>
+                            </div>
+                        </div>
+
+                        <div class="solicitacao-content">
+                            <div class="topic-section">
+                                <h4>Tópico da Sessão</h4>
+                                <p>Deep Learning com TensorFlow</p>
+                            </div>
+
+                            <div class="challenge-section">
+                                <h4>Desafio do Usuário</h4>
+                                <p>Criar modelos de reconhecimento de imagens</p>
+                            </div>
+
+                            <div class="progress-section">
+                                <h4>Progresso no Cronograma</h4>
+                                <div class="progress-steps">
+                                    <div class="progress-step completed">Redes Neurais Avançadas</div>
+                                    <div class="progress-step completed">Processamento de Imagens</div>
+                                    <div class="progress-step current">TensorFlow Avançado</div>
+                                    <div class="progress-step">Deploy de Modelos</div>
+                                </div>
+                            </div>
+
+                            <div class="session-info">
+                                <div class="session-date">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>2024-01-25</span>
+                                </div>
+                                <div class="session-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>16:00 • 90 min</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="solicitacao-actions">
+                            <button class="btn-action btn-reject">Recusar</button>
+                            <button class="btn-action btn-reschedule">Reagendar</button>
+                            <button class="btn-action btn-accept">Aceitar Sessão</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Configurações View -->
             <div id="configuracoes" class="content-view">
                 <div class="config-header">
                     <h1>Configurações</h1>
-                    <button class="btn-save">Salvar Alterações</button>
+                    <button id="configHeaderSaveBtn" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        Salvar
+                    </button>
                 </div>
 
                 <div class="config-sections">
